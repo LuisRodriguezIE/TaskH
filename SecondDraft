@@ -1,0 +1,822 @@
+Your draft has a strong foundation, but one conceptual correction is essential:
+
+Microsoft 365 → Fabric → Power BI is not a strict administrative hierarchy.
+
+Microsoft 365 and Microsoft Entra provide identity, groups, licenses, roles, security policies, and tenant-level cloud administration. Fabric provides the analytics administration and governance plane. Power BI is one of the workloads administered within Fabric. Domains and capacities are two parallel ways of organizing Fabric: domains represent business ownership, while capacities represent compute resources.
+
+1. Recommended document purpose
+
+Replace the existing purpose with:
+
+Purpose
+
+The purpose of this document is to define the operating model, governance structure, administrative roles, organizational ownership, workspace standards, security controls, and lifecycle processes used to administer Microsoft Fabric and the Power BI workload within the organization’s Microsoft cloud tenant.
+
+The document establishes:
+
+How Microsoft 365, Microsoft Entra ID, Fabric, and Power BI administrative responsibilities interact.
+How Fabric domains and subdomains represent the organizational structure.
+How workspaces are requested, approved, created, secured, operated, monitored, and retired.
+How business owners, domain stewards, IT representatives, Fabric administrators, and workspace administrators share responsibility.
+How users obtain access to workspaces, Power BI apps, reports, semantic models, and data.
+How naming, environments, deployment, monitoring, and access recertification are standardized.
+2. Corrected top-down administrative model
+
+A more accurate representation is:
+
+Microsoft 365 / Microsoft Entra tenant
+│
+├── Identity and access
+│   ├── Users
+│   ├── Security groups
+│   ├── Administrative roles
+│   ├── Conditional Access
+│   └── Service principals
+│
+├── Licensing and subscriptions
+│
+├── Microsoft Fabric tenant
+│   │
+│   ├── Tenant-wide governance
+│   │   ├── Tenant settings
+│   │   ├── Audit and monitoring
+│   │   ├── Security and sharing policies
+│   │   └── Feature enablement
+│   │
+│   ├── Business governance axis
+│   │   └── Domains → Subdomains → Workspaces → Items
+│   │
+│   ├── Compute governance axis
+│   │   └── Capacities → Workspaces → Workloads
+│   │
+│   └── Power BI workload
+│       ├── Semantic models
+│       ├── Reports
+│       ├── Dashboards
+│       ├── Apps and audiences
+│       └── Consumer access
+
+A workspace can simultaneously:
+
+Belong to a business domain or subdomain.
+Be assigned to a Fabric capacity.
+Contain Power BI or other Fabric items.
+Have its own administrators and contributors.
+Publish content through a Power BI app.
+
+Therefore, capacity should be added to your operating model. It should not be placed underneath domains because domain administration and capacity administration represent different responsibilities. Fabric allows certain settings to be delegated through either domains or capacities, but a specific setting cannot be delegated through both paths simultaneously.
+
+A better operating model is:
+
+Microsoft 365 / Entra
+    ↓ Identity, groups, licenses and administrative roles
+
+Fabric tenant
+    ↓ Global guardrails, tenant settings, auditing and governance
+
+Business governance                    Compute governance
+Domain                                 Capacity
+  ↓                                      ↓
+Subdomain                                Capacity settings
+  └────────────── Workspace ─────────────┘
+                         ↓
+                       Items
+                         ↓
+              Power BI app / audiences
+                         ↓
+                    Business users
+3. Revised glossary
+Microsoft 365 tenant
+
+The Microsoft 365 tenant represents the organization’s Microsoft cloud environment. It contains users, groups, administrative roles, subscriptions, licenses, registered domains, applications, and security configurations.
+
+For the Fabric and Power BI operating model, Microsoft 365 and Microsoft Entra are responsible primarily for:
+
+User identities.
+Security and Microsoft 365 groups.
+Administrative role assignment.
+Fabric and Power BI license assignment.
+Service principals and application identities.
+Authentication and Conditional Access.
+User onboarding and offboarding.
+
+Most Fabric administrative roles are assigned through the Microsoft 365 administration environment. Dedicated Fabric administration roles allow an organization to administer Fabric without granting unrestricted Global Administrator permissions.
+
+Microsoft Fabric
+
+Microsoft Fabric is Microsoft’s unified analytics SaaS platform. It provides shared administration, governance, storage, computing, monitoring, and security capabilities for workloads such as Power BI, Data Engineering, Data Factory, Data Science, Data Warehouse, Real-Time Intelligence, and databases.
+
+Fabric administration includes:
+
+Tenant settings.
+Workspace administration.
+Domain administration.
+Capacity administration.
+Feature enablement.
+Security and sharing controls.
+Audit and usage monitoring.
+Administrative APIs.
+Governance and information protection integration.
+
+The Fabric administration portal is the central administrative interface, but some related functions remain in Microsoft 365, Entra, Azure, and Microsoft Purview.
+
+Power BI
+
+Power BI is the business intelligence and reporting workload within Microsoft Fabric. It is used to create semantic models, reports, dashboards, metrics, and applications and to distribute analytical information to users.
+
+Power BI administration is now largely performed through the Fabric administration model. A “Power BI Administration Account” should not be described as a separate account type. It is normally a Microsoft Entra organizational account assigned the Fabric Administrator or, where organizationally appropriate, Power Platform Administrator role. Both roles can perform organization-wide Fabric administration tasks, except that licensing remains under Microsoft 365 licensing administration.
+
+Capacity
+
+A capacity is the compute resource used to run Fabric workloads. Capacity management is separate from business-domain management.
+
+Capacity administration includes:
+
+Assigning workspaces to a capacity.
+Managing access to the capacity.
+Monitoring consumption and performance.
+Configuring workload resource behavior.
+Reviewing throttling and overload.
+Supporting performance and cost management.
+
+A Capacity Administrator controls only the capacity assigned to them and does not automatically become a Fabric tenant administrator.
+
+Domain
+
+A Fabric domain is a logical governance structure used to group workspaces that belong to a business function, organizational area, or data-ownership boundary.
+
+Domains do not contain reports or data directly. They organize and govern the workspaces that contain those items.
+
+A domain can contain subdomains. For this organization, the four principal organizational groups should become the top-level domains, and their areas should become subdomains. Fabric Administrators create top-level domains, while Fabric Administrators or Domain Administrators can create subdomains.
+
+Subdomain
+
+A subdomain represents a more specific organizational area within a domain.
+
+For example:
+
+Corporate Services
+    ├── Finance
+    ├── Human Resources
+    ├── Quality
+    └── Sustainability and Environment
+
+The subdomain is the most appropriate level for associating the Responsible and Accountable people supplied in your organizational table.
+
+Workspace
+
+A workspace is the primary collaboration, security, and content-management container in Fabric.
+
+It can contain:
+
+Lakehouses.
+Warehouses.
+Pipelines.
+Dataflows.
+Notebooks.
+Semantic models.
+Reports.
+Dashboards.
+Power BI apps.
+Other Fabric items.
+
+A workspace has its own access roles, settings, capacity assignment, domain assignment, contacts, description, and lifecycle.
+
+Item
+
+An item is an individual Fabric or Power BI asset stored inside a workspace, such as a report, semantic model, notebook, lakehouse, warehouse, pipeline, or dashboard.
+
+Item-level permissions may complement workspace and app access, but excessive direct item sharing should be avoided because it makes access governance more difficult.
+
+Power BI app
+
+A Power BI app is the preferred mechanism for distributing governed reports and dashboards to business consumers.
+
+Apps can contain multiple audiences. Each audience can see a different subset of reports and can be assigned to Entra security groups or other supported groups. Consumers generally should receive app access rather than workspace access unless they need to collaborate on content.
+
+4. Administrative roles and relationships
+Microsoft 365 and Entra roles
+Role	Recommended responsibility
+Global Administrator	Emergency or exceptional tenant-wide administration. Should not be the normal Power BI administrator.
+User Administrator	Creates and maintains users and groups; supports onboarding and offboarding.
+License Administrator	Assigns and removes Fabric, Power BI Pro, and PPU licenses.
+Security Administrator	Coordinates identity protection, Conditional Access, security investigation, and related controls.
+Compliance or Purview Administrator	Supports sensitivity labels, auditing, retention, data loss prevention, and compliance policies.
+Fabric roles
+Role	Scope	Main responsibilities
+Fabric Administrator	Entire tenant	Tenant settings, domains, workspace oversight, feature configuration, monitoring, auditing, and organization-wide governance.
+Power Platform Administrator	Entire tenant	Can perform Fabric administration tasks but normally has broader Power Platform responsibilities.
+Capacity Administrator	One capacity	Workspace assignment, capacity access, performance, consumption, and workload management.
+Domain Administrator	One domain	Manages domain metadata, subdomains, domain contributors, workspace association, and delegated domain settings.
+Domain Contributor	One domain	Can associate workspaces they administer with the authorized domain.
+Workspace Administrator	One workspace	Manages access, settings, content, contacts, app publication, and workspace lifecycle.
+
+Domain Administrators cannot rename or delete the top-level domain or appoint additional Domain Administrators. Fabric Administrators retain those tenant-level responsibilities.
+
+Power BI workspace roles
+
+Your original role table needs some additional precision.
+
+Role	Appropriate users	Capabilities	Important restriction
+Admin	Workspace owner or delegated technical administrator	Full content and access management, workspace settings, app management, and workspace deletion	Highest workspace privilege
+Member	Senior content owners and release managers	Create and edit content, publish and update apps, share content, and add users with permitted roles	Should be assigned sparingly
+Contributor	Developers, report authors, data engineers	Create, modify, publish, and delete workspace content	Cannot normally administer workspace access
+Viewer	Limited workspace consumers	View and interact with content	Read-only; RLS is enforced for this role
+
+Users assigned to more than one group receive the highest workspace permission granted by any of those groups. RLS should not be treated as a control for Admins, Members, or Contributors. For most consumers, use Power BI app audiences instead of adding them as workspace Viewers.
+
+5. Organization structure based on the supplied information
+
+The four top-level Fabric domains should be:
+
+Domain	Code
+Corporate Services	COR
+Sales & Marketing	SAM
+Operations	OPS
+Product Lifecycle	PLC
+
+The areas underneath them should be implemented as subdomains.
+
+Proposed domain and subdomain structure
+Domain	Area code	Area or subdomain	Responsible	Accountable	IT contact
+Corporate Services	HR	Human Resources	TBD	TBD	TBD
+Corporate Services	FIN	Finance	Pascal Kalkhake	Nico Borchers	TBD
+Corporate Services	LGL	Legal & Compliance	TBD	TBD	TBD
+Corporate Services	IMS	Integrated Management Systems	Pascal Schütte	Stephan Middelkamp	TBD
+Corporate Services	TAX	Taxes	TBD	TBD	TBD
+Corporate Services	QLT	Quality	Pascal Schütte	Stephan Middelkamp	TBD
+Corporate Services	CDE	Corporate Development	TBD	Julian Fieres	TBD
+Corporate Services	SUS	Sustainability and Environment	Nadine Frank	Stephan Middelkamp	TBD
+Corporate Services	IT	Information Technology	TBD	TBD	TBD
+Sales & Marketing	SM1	Sales & Marketing — scope to confirm	Arkadiusz Moszkowicz	Cherlynn Pennington	TBD
+Sales & Marketing	SM2	Sales & Marketing — scope to confirm	Jeffrey Mcghee	TBD	TBD
+Sales & Marketing	CSV	Customer Service	Abigail Espinosa	TBD	TBD
+Sales & Marketing	DTX	Digital Transformation	Christopher Kuebler	Andreas Wedel	TBD
+Operations	SCM	Supply Chain Management	Fanny Hein	Alexander Masch	TBD
+Operations	PRC	Procurement	Sebastian Schauffert	Thomas Bake	TBD
+Operations	MNT	Maintenance	Johannes Brack	Patrick Gruber	TBD
+Operations	MDM	Master Data Management	Soeren Kreker	Henrike Held	TBD
+Operations	MFG	Manufacturing	Rudolf Gläser	TBD	TBD
+Product Lifecycle	PLM	Product Lifecycle Management	Jakob Moor	Norbert Gemmeke	TBD
+Product Lifecycle	PPM	Product Portfolio Management	Lukas Breuer	Norbert Gemmeke	TBD
+Product Lifecycle	IHB	Innovation Hubs	Björn Olbricht	Norbert Gemmeke	TBD
+Recommended RACI interpretation
+
+The existing columns should not automatically be converted into technical permissions.
+
+Organization field	Governance interpretation
+Accountable	Business owner or executive sponsor who accepts final accountability for the area
+Responsible	Operational data owner or subdomain steward responsible for coordination and decisions
+IT Contact	Technical liaison who coordinates Fabric, security, access, integration, and platform requirements
+Fabric Administrator	Central platform role; not necessarily one of the listed business owners
+Domain Administrator	Delegated governance role; assigned only after training and approval
+Workspace Administrator	Operational owner of a specific workspace
+
+A named Responsible person may be a good Domain Steward candidate, but should not automatically receive Domain Administrator access. Technical permissions should be granted only after determining whether that person will perform the actual administrative duties.
+
+Information that remains incomplete
+
+Before implementing the domain model, the organization must resolve:
+
+The executive owner and primary steward for each of the four top-level domains.
+The IT Contact for each area.
+The difference between the two “Sales & Marketing” entries.
+The missing Responsible or Accountable values.
+Whether the Responsible and Accountable assignments apply globally, regionally, or only to specific legal entities.
+
+Until the two Sales & Marketing scopes are confirmed, codes such as SM1 and SM2 should be treated as temporary placeholders.
+
+6. Revised workspace model
+
+Your principle that each workspace must have exactly one archetype is good. I recommend adding a separate semantic-model archetype.
+
+Code	Archetype	Typical content	Owner	Lifecycle
+DAT	Data platform	Lakehouses, warehouses, pipelines, notebooks, dataflows	Data or BI platform team	Permanent and controlled
+SEM	Semantic layer	Governed reusable semantic models and shared measures	BI team plus business data owner	Permanent and controlled
+RPT	Reporting layer	Thin reports and Power BI apps consuming governed semantic models	BI team plus business owner	Permanent and controlled
+WRK	Managed self-service	Team-owned reports and semantic models	Business team lead	Annual recertification
+SBX	Sandbox	Personal or experimental content	Individual or project team	Time-limited
+PLT	Platform administration	Governance, inventory, monitoring, administrative reports and tooling	Fabric platform team	Permanent and restricted
+
+The division becomes:
+
+DAT → governed data products
+  ↓
+SEM → reusable business definitions and measures
+  ↓
+RPT → thin reports and Power BI apps
+  ↓
+APP → audiences and business consumers
+
+This separation is not mandatory for every solution. Smaller solutions may combine DAT and SEM, but business-critical shared semantic models should generally have explicit ownership.
+
+7. Updated naming convention
+
+Because the organization now has both domains and subdomains, update the convention to:
+
+<DOMAIN>-<AREA>-<ARCHETYPE>-<SUBJECT>[-<ENV>]
+
+Examples:
+
+COR-FIN-DAT-Revenue-PRD
+COR-FIN-SEM-FinancialPerformance-PRD
+COR-FIN-RPT-ExecutiveFinance-PRD
+
+OPS-SCM-DAT-Inventory-PRD
+OPS-SCM-SEM-SupplyChain-PRD
+OPS-SCM-RPT-InventoryOverview-PRD
+
+PLC-PLM-WRK-ProductPortfolio
+SAM-DTX-SBX-jperez
+COR-IT-PLT-Governance
+
+A maintainable generic validation expression is:
+
+^(COR|SAM|OPS|PLC)-[A-Z0-9]{2,4}-(DAT|SEM|RPT|WRK|SBX|PLT)-[A-Za-z0-9]{2,30}(-(DEV|TST|PRD))?$
+
+The valid domain–area combinations should be validated against a reference table rather than embedded in one very long regular expression. This allows organizational changes without modifying the expression.
+
+Your draft currently uses both SB-DV and SBX. Standardize on one value; SBX is simpler.
+
+Entra group naming
+PBI-WS-<WorkspaceName>-<ROLE>
+PBI-APP-<Domain>-<AppName>-<Audience>
+PBI-RLS-<Domain>-<Model>-<Role>
+
+Workspace-role codes:
+
+ADM = Admin
+MBR = Member
+CTB = Contributor
+VWR = Viewer
+
+Examples:
+
+PBI-WS-COR-FIN-SEM-FinancialPerformance-PRD-ADM
+PBI-WS-COR-FIN-RPT-ExecutiveFinance-PRD-CTB
+PBI-APP-COR-ExecutiveFinance-Leadership
+PBI-RLS-COR-FinancialPerformance-Germany
+Renaming correction
+
+Microsoft supports renaming a workspace when the user has Workspace Admin permissions. However, the documentation does not guarantee that every external bookmark, documentation reference, script, deployment dependency, or integration will remain unaffected. Therefore, replace your current statement with:
+
+Workspace renaming is technically supported for Workspace Administrators. Before a production workspace is renamed, the administrator must assess and test the effect on documentation, automation, APIs, deployment processes, app communication, and user bookmarks.
+
+8. Complete administration workflow
+Stage 0 — Establish the platform foundation
+
+This is a one-time or infrequently repeated governance process.
+
+Activity	Primary owner
+Assign Fabric Administrators	Microsoft 365 administration
+Establish tenant-setting baseline	Fabric Administrator
+Define capacities and Capacity Administrators	Fabric Administrator / IT
+Define domains and subdomains	Fabric Administrator and business governance
+Appoint Domain Administrators and stewards	Fabric Administrator and business owners
+Define naming and workspace archetypes	Fabric governance team
+Define sensitivity and sharing policies	Security, compliance, and Fabric Administrator
+Establish Entra group templates	Identity administration
+Configure monitoring and audit processes	Fabric Administrator
+Publish request and approval procedure	Fabric governance team
+
+Fabric administration should use a combination of the Fabric admin portal, Microsoft 365 administration, Entra, and Purview rather than attempting to perform every activity in a single portal.
+
+Stage 1 — Request and intake
+
+A business requester submits a workspace or Power BI solution request containing:
+
+Business objective.
+Requested domain and area.
+Content description.
+Data sources.
+Intended users.
+Expected audience size.
+Data owner.
+Responsible and Accountable people.
+Sensitivity classification.
+External-sharing requirement.
+Estimated refresh frequency.
+Required environment.
+Expected lifecycle.
+
+Output: registered request with a unique request ID.
+
+Stage 2 — Ownership and classification
+
+The Domain Steward validates:
+
+Correct domain and subdomain.
+Business owner.
+Workspace archetype.
+Whether an existing workspace or semantic model can be reused.
+Whether the request is governed BI, managed self-service, or sandbox.
+Whether the solution requires DEV, TST, and PRD.
+
+Decision: Is the request complete and appropriately classified?
+
+No: return it to the requester.
+Yes: continue to risk and architecture assessment.
+Stage 3 — Security, compliance, and risk assessment
+
+Assess:
+
+Personal or confidential data.
+Required sensitivity label.
+RLS or object-level security.
+External users.
+Export and download requirements.
+Public sharing risk.
+Data residency.
+Gateway or network requirements.
+Retention and deletion requirements.
+Service principals and application access.
+
+Output: documented controls and approval requirements.
+
+Stage 4 — Architecture and capacity assessment
+
+The Fabric or BI platform team determines:
+
+Required workspace architecture.
+DAT, SEM, RPT, WRK, SBX, or PLT archetype.
+Capacity assignment.
+Data connectivity.
+Gateway requirements.
+Refresh design.
+Deployment pipeline requirements.
+Git or source-control requirements.
+Expected capacity consumption.
+Monitoring requirements.
+Stage 5 — Formal approval
+
+Recommended approval chain:
+
+Business Accountable
+        ↓
+Domain Steward or Domain Administrator
+        ↓
+IT Contact / Architecture
+        ↓
+Security or Compliance, when required
+        ↓
+Fabric Administrator, for governed or exceptional requests
+
+Standard low-risk workspace requests can use a delegated approval path. High-risk, external-sharing, confidential-data, or new-capacity requests should require central approval.
+
+Stage 6 — Workspace provisioning
+
+The delegated administrator:
+
+Creates the workspace.
+Applies the naming convention.
+Assigns the domain or subdomain.
+Assigns the correct capacity.
+Selects the workspace archetype.
+Adds the mandatory description.
+Defines workspace contacts.
+Applies sensitivity and governance settings.
+Registers the workspace in the governance inventory.
+Establishes expiration or recertification dates.
+Stage 7 — Group and access configuration
+
+Create or reuse Entra groups for:
+
+Admin.
+Member.
+Contributor.
+Viewer, only when workspace-level viewing is justified.
+Power BI app audiences.
+RLS roles.
+Gateway access.
+Data-source permissions.
+
+Direct user assignment should be treated as an exception. Access should normally be managed through groups.
+
+Stage 8 — Development
+
+Developers and Contributors:
+
+Build pipelines, lakehouses, warehouses, semantic models, and reports.
+Follow data and report-development standards.
+Document sources, transformations, measures, and ownership.
+Apply naming and metadata standards.
+Conduct code or peer review.
+Validate refresh and performance.
+Avoid publishing production content directly from personal workspaces.
+Stage 9 — Technical validation and testing
+
+Testing should cover:
+
+Data reconciliation.
+Measure and KPI validation.
+RLS and access testing.
+Refresh testing.
+Gateway and credential testing.
+Performance testing.
+Capacity impact.
+Sensitivity labels.
+Export and sharing behavior.
+Application audiences.
+Failure and recovery behavior.
+Stage 10 — User acceptance and business sign-off
+
+The Business Owner confirms:
+
+Business requirements are satisfied.
+KPIs and definitions are correct.
+Users see only the correct data.
+Reports are understandable and usable.
+Support and ownership are defined.
+Production publication is approved.
+
+Failed UAT returns the solution to development.
+
+Stage 11 — Production deployment
+
+For business-critical solutions:
+
+DEV → TST → PRD
+
+The deployment process should:
+
+Promote approved content.
+Apply production connections and parameters.
+Validate permissions.
+Validate refresh schedules.
+Update the inventory.
+Update lineage and documentation.
+Record the release.
+Communicate the deployment.
+Stage 12 — Power BI app publication
+
+The Workspace Administrator or designated release manager:
+
+Creates or updates the Power BI app.
+Defines audiences.
+Assigns Entra groups.
+Selects which content each audience can see.
+Configures app permissions.
+Tests the consumer experience.
+Publishes communication and support information.
+
+Consumers should normally access governed content through the app rather than through the underlying workspace.
+
+Stage 13 — Monitoring and operations
+
+Monitor:
+
+Refresh success and failures.
+Capacity consumption and throttling.
+Report and app usage.
+Adoption.
+Workspace growth.
+Inactive content.
+Orphaned workspaces.
+Access changes.
+External sharing.
+Administrative activity.
+Audit events.
+Incidents and support tickets.
+Data quality.
+Certification status.
+
+Fabric includes an admin monitoring workspace and usage/adoption reporting capabilities that can support this process.
+
+Stage 14 — Access recertification
+
+Recommended frequency:
+
+Workspace classification	Recertification
+DAT / SEM / RPT production	Every 6–12 months
+Managed self-service WRK	Annually
+Sandbox SBX	Every 90 days or automatic expiration
+Platform PLT	Every 6 months
+Sensitive or externally shared	Quarterly or according to policy
+
+Review:
+
+Workspace ownership.
+Admin and Member assignments.
+Contributor access.
+App audiences.
+RLS groups.
+External users.
+Licenses.
+Unused content.
+Continued business justification.
+Stage 15 — Change or decommissioning
+
+When a workspace is no longer needed:
+
+Obtain Business Owner approval.
+Identify dependencies and downstream reports.
+Remove or redirect app access.
+Preserve required documentation or exports.
+Apply retention policies.
+Disable refresh.
+Remove credentials and gateway permissions.
+Archive or delete content according to policy.
+Remove Entra groups when no longer required.
+Update the governance inventory and audit record.
+
+
+--------------------------------------------------------------
+
+Fabric and Power BI administration — revised sections
+
+Revision of the first draft. Replaces the Glossary, the Domain / Workspace / Role definitions, the convention section and the diagrams. Everything else in the original draft still stands.
+
+1. Glossary and administrative model
+1.1 Microsoft Entra ID
+
+The identity layer. Every principal that touches Fabric or Power BI — user, security group, or service principal — is an Entra object.
+
+The single most misunderstood point in this platform: the Fabric administrative roles are Entra roles, not Fabric roles. They are assigned in the Microsoft 365 admin center or the Entra portal. There is no "make this person an admin" button inside the Fabric portal.
+
+1.2 Microsoft 365 tenant
+
+The organization's cloud environment. One tenant = one Fabric environment = one Power BI environment. There is no way to run two independent Fabric estates inside one tenant; separation is achieved through capacities, domains and workspaces, not through additional tenants.
+
+Licensing (Fabric Free, Pro, Premium Per User, F SKUs) is managed here, and licensing is the one thing a Fabric administrator cannot do.
+
+Relevant roles:
+
+Role	Scope	Use
+Global administrator	Everything, including all of Fabric	Emergency access only. Should never be the day-to-day BI administrator.
+Power Platform administrator	Superset that includes full Fabric administration	Only where Power Platform and Fabric are administered by the same team.
+Fabric administrator	Fabric and Power BI tenant administration	The recommended least-privilege role for this platform.
+1.3 Fabric administrator
+
+The Entra role formerly called Power BI Service Administrator. Same role, renamed when Power BI became a workload inside Fabric. Documentation and blog posts written before the rename use the old name for the same thing.
+
+Grants:
+
+Access to the Fabric admin portal and all tenant settings
+Capacity settings and capacity assignment
+Creation and deletion of domains, and assignment of domain admins
+Tenant-wide workspace visibility and management, including workspaces the admin is not a member of
+Usage metrics, the admin APIs, and the activity log
+The ability to delegate specific tenant settings downward
+
+Does not grant:
+
+Licence assignment or billing (Microsoft 365 admin / billing)
+User and group creation (Entra)
+Access to the content of a workspace by default — administrative visibility is not the same as data access
+
+Operational gotcha worth writing into the runbook: an admin account still needs a Fabric licence assigned (Fabric Free is enough) before the admin portal will open. Cloud-only admin accounts created without any licence hit a "your organisation has blocked access" redirect that looks like a permissions bug and is not.
+
+1.4 Capacity admin
+
+Assigned per capacity, at the moment the capacity is created. Manages workload settings, scale, and which workspaces are attached to that capacity. Can override tenant settings that have been delegated to capacity level, affecting only the workspaces on that capacity. This role is not tenant-wide.
+
+1.5 Domain and subdomain
+
+A domain is a logical grouping of workspaces by business area. It is the delegation point of the model, and it supports one level of subdomain beneath it.
+
+Three roles:
+
+Role	Can	Cannot
+Fabric administrator	Create, rename and delete domains; assign domain admins; assign any workspace to any domain	—
+Domain admin	Update description and image, manage subdomains, define domain contributors, assign workspaces to the domain, override delegated tenant settings for the domain	Delete the domain, rename it, add or remove other domain admins
+Domain contributor	A workspace admin authorised to assign their own workspace to the domain, from workspace settings	Anything else at domain level
+
+Critical clarification for the document: domain assignment does not grant, restrict or change access to anything. Item discovery, visibility and access depend on workspace role and item permissions. What a domain changes is organisation, discoverability in the OneLake catalog, and which delegated settings apply. Anyone who reads the domain model as a security model will design the wrong thing.
+
+Second clarification: the set of tenant settings that can actually be delegated to domain level is short and changes between releases. Confirm the current list in the tenant settings search before promising a business area that it can self-manage a specific setting.
+
+1.6 Workspace
+
+The container. Holds items, carries the four fixed roles, sits on one capacity, and belongs to at most one domain.
+
+Role	Key capability	Key limitation
+Admin	Everything, including access management and deletion	—
+Member	Publish, share, add others up to Member	Cannot delete the workspace
+Contributor	Create and edit content	Cannot share or manage access
+Viewer	Read published content; RLS is enforced	Needs Build permission separately to create their own reports on a semantic model
+1.7 Power BI
+
+Power BI is a workload inside Fabric, not a separate product with its own administration. The Power BI admin portal is the Fabric admin portal. Power BI specific controls (Premium Per User, embed codes, dashboard and report settings, export and sharing switches) are a subsection of Fabric tenant settings.
+
+There is no separate "Power BI administration account". Remove that term from the draft.
+
+1.8 Service principal
+
+An Entra application identity used for automation. This is the mechanism for everything recurring in this programme: workspace inventory, orphan detection, role auditing, provisioning, recertification reminders.
+
+Two tenant settings gate it, both scoped to a security group:
+
+Service principals can use Fabric APIs
+Service principals can use read-only Fabric admin APIs
+
+Recommendation: one service principal for read-only inventory and monitoring, a second, separately governed one for write operations (provisioning, role assignment, deletion). Do not use a named human Fabric administrator account for automation — it breaks when the person leaves, which is the same failure that produced the 4,000 orphaned workspaces.
+
+1.9 The delegation chain
+
+Tenant setting → delegated to a domain or a capacity → optionally delegated further to a workspace. A tenant admin can bypass the middle and delegate straight to a workspace. Overrides are scoped: a change at domain level affects only workspaces in that domain; at capacity level, only workspaces on that capacity.
+
+2. Structure applied to the real organization
+2.1 Domains and subdomains
+
+Four business domains plus one platform domain. The organization's second level maps directly onto Fabric subdomains.
+
+Domain	Code	Subdomain	Code
+Corporate Services	COR	Human Resources	HRS
+		Finance	FIN
+		Legal & Compliance	LEG
+		Integrated Management Systems	IMS
+		Taxes	TAX
+		Quality	QLT
+		Corporate Development	CDV
+		Sustainability & Environment	SUS
+		IT	ITX
+Sales & Marketing	SAM	Sales	SLS
+		Marketing	MKT
+		Customer Service	CSV
+		Digital Transformation	DGT
+Operations	OPS	Supply Chain Management	SCM
+		Procurement	PRC
+		Maintenance	MNT
+		Master Data Management	MDM
+		Manufacturing	MFG
+Product Lifecycle	PLC	PLM	PLM
+		PPM	PPM
+		Innovation Hubs	INN
+Platform	PLT	Platform	PLT
+
+Notes on the mapping:
+
+The source table lists Sales & Marketing twice with different responsible parties. Treated here as two subdomains, Sales and Marketing. Confirm before publishing.
+Platform is added. Governance monitoring, the workspace inventory, admin tooling and the deployment pipelines are not a business area and must not sit inside one.
+ITX rather than IT — two-character codes break the fixed-width readability of the naming standard and collide with common substrings when parsing.
+2.2 Naming standard
+
+Subdomain codes are unique across the tenant, so the subdomain code is the first segment. The parent domain is carried by Fabric metadata, not by the string — encoding both would produce names like COR-FIN-DAT-Revenue-PRD for no added information.
+
+<AREA>-<ARCHETYPE>-<Subject>[-<ENV>]
+^(HRS|FIN|LEG|IMS|TAX|QLT|CDV|SUS|ITX|SLS|MKT|CSV|DGT|SCM|PRC|MNT|MDM|MFG|PLM|PPM|INN|PLT)-(DAT|RPT|WRK|SBX|PLT)-[A-Za-z0-9]{2,30}(-(DEV|TST|PRD))?$
+
+Two fixes from the draft: PLT was in the domain group, where it does not belong as an archetype; and the sandbox archetype was written as SB-DV in the table and SBX in the regex. SB-DV contains a hyphen and breaks the parser. Standardise on SBX, with no environment suffix.
+
+Example	Reads as
+FIN-DAT-Revenue-PRD	Finance, data layer, revenue, production
+FIN-RPT-Revenue-PRD	Finance, report layer, consuming the above
+SCM-WRK-Logistics	Supply chain, workgroup, logistics team
+MFG-DAT-OEE-DEV	Manufacturing, data layer, OEE, development
+SLS-SBX-jperez	Sales, sandbox, individual
+PLT-PLT-Governance	Platform domain, platform archetype, the governance workspace itself
+
+Entra group naming is unchanged from the draft and remains correct:
+
+PBI-WS-<WorkspaceName>-<ROLE>       ROLE in {ADM, MBR, CTB, VWR}
+PBI-APP-<Area>-<AppName>-<Audience>
+
+Rule to add: workspace roles are assigned to Entra groups only, never to individual users. This is what makes joiner–mover–leaver work, and its absence is the root cause of the current orphaned estate.
+
+2.3 Renaming — the open item from the draft, resolved
+
+Workspace URLs are built on the workspace GUID, not the name, so renaming a workspace does not break existing links or browser bookmarks.
+
+What renaming does break:
+
+XMLA endpoint connection strings, which use the workspace name (powerbi://api.powerbi.com/v1.0/myorg/<WorkspaceName>)
+DirectQuery and live connections to semantic models that resolve by workspace name
+Deployment pipeline documentation, scripts, and anything hard-coding the name
+
+So a mass rename is safe for consumers and unsafe for developers and integrations. Sequence it: inventory XMLA and DirectQuery dependencies first, rename, then repoint.
+
+2.4 Ownership mapping
+
+Each organizational role maps to one Fabric role:
+
+Organizational role	Fabric role	Scope
+Accountable	Domain admin	Domain (4 business domains)
+Responsible	Workspace admin + domain contributor	Their subdomain's workspaces
+IT contact	Fabric administrator / BI platform team	Tenant, plus all PLT workspaces
+Domain	Subdomain	Responsible	Accountable	IT contact
+Corporate Services	HR	gap	gap	gap
+	Finance	Pascal Kalkhake	Nico Borchers	gap
+	Legal & Compliance	gap	gap	gap
+	IMS	Pascal Schütte	Stephan Middelkamp	gap
+	Taxes	gap	gap	gap
+	Quality	Pascal Schütte	Stephan Middelkamp	gap
+	Corporate Development	gap	Julian Fieres	gap
+	Sustainability & Environment	Nadine Frank	Stephan Middelkamp	gap
+	IT	gap	gap	gap
+Sales & Marketing	Sales	Arkadiusz Moszkowicz	Cherlynn Pennington	gap
+	Marketing	Jeffrey Mcghee	gap	gap
+	Customer Service	Abigail Espinosa	gap	gap
+	Digital Transformation	Christopher Kuebler	Andreas Wedel	gap
+Operations	Supply Chain Management	Fanny Hein	Alexander Masch	gap
+	Procurement	Sebastian Schauffert	Thomas Bake	gap
+	Maintenance	Johannes Brack	Patrick Gruber	gap
+	Master Data Management	Soeren Kreker	Henrike Held	gap
+	Manufacturing	Rudolf Gläser	gap	gap
+Product Lifecycle	PLM	Jakob Moor	Norbert Gemmeke	gap
+	PPM	Lukas Breuer	Norbert Gemmeke	gap
+	Innovation Hubs	Björn Olbricht	Norbert Gemmeke	gap
+Platform	Platform	BI platform team	gap	gap
+
+This table is the blocker for the whole model, and it should be presented that way. 22 of 66 cells are empty, including every IT contact. Domain admins are assigned per domain, not per subdomain, so the immediate decision needed is only four names — one accountable person per business domain. Everything else can be filled in progressively.
+
+Note that Stephan Middelkamp is accountable for three subdomains and Norbert Gemmeke for the whole Product Lifecycle domain. Both are natural domain admin candidates.
